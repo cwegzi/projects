@@ -1,0 +1,40 @@
+import random
+
+class Player:
+
+    def __init__(self, name=None, active=True, score=0):
+        self.name = input('Player name: ')
+        self.active = active
+        self.score = score
+
+    def throw(self):
+        scores = [random.randint(1, 100) for _ in range(5)] # five darts
+        score = sum(scores)
+        self.score += score
+        print(f'Player {self.name} threw {scores} totaling {score}')
+
+def still_playing(players):
+    return any(p.active for p in players)  # any players still 'active'?
+
+def display_scoreboard(game_round, players):
+    high_scorers = sorted([p for p in players if p.active],
+                          key=lambda p: p.score,
+                          reverse=True)
+    print(f'Round {game_round} High Scores:')
+    for position, player in enumerate(high_scorers, start=1):
+        print(f'{position:>3} {player.name:<20} {player.score:>20}')
+    print()
+
+players = [Player() for _ in range(int(input('Player count? ')))]
+game_round = 1
+while still_playing(players):
+    low_score = 2 ** 32
+    for index, player in enumerate(players):
+        if player.active:
+            player.throw()
+            if player.score < low_score:
+                low_score = player.score
+                low_index = index
+    display_scoreboard(game_round, players)
+    players[low_index].active = False
+    game_round += 1  # increase game round
